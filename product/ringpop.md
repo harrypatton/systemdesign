@@ -37,3 +37,18 @@ Flap damping is a technique used to identify and evict bad nodes from a cluster.
 In the original implementation of ringpop, if a cluster is split to multiple partitions, nodes in each partition declare each other as faulty, and afterward will no longer communicate. Ringpop implemented support for merging the partitions, which we call **healing**.
 
 ##Partition Healing
+
+# Uber Ringpop Engineering Blog
+Origin: https://eng.uber.com/intro-to-ringpop/
+
+How Ringpop helps distribute your application
+
+1. A membership protocol - allow independent workers to discover each other and detect failures (SWIM).
+2. Consistent hashing - assign work across the workers.
+3. Forwarding capabilities - handle or forward pattern.
+
+First use case: Uber's Geospatial service.
+
+1. First, the SWIM gossip membership protocol lets us divvy up work automatically. When we add servers the code doesn’t change. New processes discover each other, disseminate information in an infectious manner, and repeatedly ping each other so that each node knows about every other node’s existence and status. After you embed Ringpop into your application’s code, your instances will keep track of membership.
+2. Next, the consistent hashing function of Ringpop eliminates the need for manual reassignments when the application cluster is resized. The hash ring algorithm lets you assign objects to intervals rather than to specific workers.
+3. Forwarding 
