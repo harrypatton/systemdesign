@@ -2,7 +2,7 @@
 When a system writes data to cache, it must write the data to backing store at some point. The time of writing back is controlled by write policies,
 
 1. [write-through](https://en.wikipedia.org/wiki/File:Write-through_with_no-write-allocation.svg): both writes are done simultaneously. 
-2. [write-back (write behind)](https://upload.wikimedia.org/wikipedia/commons/c/c2/Write-back_with_write-allocation.svg): initially write to cache only. When the cache is to updated/modified by another cache, the writing to backing store occurred. This way is more complex to implement.
+2. [write-back (write behind)](https://upload.wikimedia.org/wikipedia/commons/c/c2/Write-back_with_write-allocation.svg): initially write to cache only. When the cache (slot) is updated/modified by another different cache, the writing to backing store occurred. This way is more complex to implement.
 	* A read miss in a write-back cache (which requires a block to be replaced by another) will often require two memory accesses to service: one to write the replaced data from the cache back to the store, and then one to retrieve the needed data.
 
 Write-miss: write a data which may not exist in cache, thus there are two approaches for situations of write-misses:
