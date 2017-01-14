@@ -1,7 +1,7 @@
 #References
 1. http://www.allthingsdistributed.com/2008/12/eventually_consistent.html
 2. http://www.allthingsdistributed.com/2010/02/strong_consistency_simpledb.html
-
+3. https://www.igvita.com/2010/06/24/weak-consistency-and-cap-implications/
 
 #Details
 ##Introduction
