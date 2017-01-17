@@ -43,7 +43,60 @@ There are many factors that may influence the design of a data system, including
 * Counter-intuitively, in such fault-tolerant systems, it can make sense to increase the rate of faults by triggering them deliberately — for example, by randomly killing individual processes without warning. Many critical bugs are actually due to poor error handling; by deliberately inducing faults, you ensure that the fault-tolerance machinery is continually exercised and tested, which can increase your confidence that faults will be handled correctly when they occur naturally. The Netflix chaos monkey is an example of this approach.
 * Although we generally prefer tolerating faults over preventing faults (previously we said prevent fault from causing failures, a subtle difference. In addition, preventing faults is very hard.), there are cases where prevention is better than cure (e.g. because no cure exists). This is the case with security matters, for example: if an attacker has compromised a system and gained access to sensitive data, that event cannot be undone. 
 
+###Hardware Faults
+* Add redundancy to the individual hardware components can reduce the failure rates.
+* There is a move towards systems that can tolerate the loss of entire machines, by using software fault-tolerance techniques in preference to hardware redundancy. 
+	* Such systems also have operational advantages: a single-server system requires planned downtime if you need to reboot the machine (to apply operating system security patches, for example), whereas a system that can tolerate machine failure can be patched one node at a time, without downtime of the entire system.
 
+###Software Errors
+* different types. just a few examples,
+	* a bug crashed all instances, e.g, Linux kernel bug regarding leap second.
+	* a runaway/wild process uses up all resources.
+	* dependency service becomes unresponsive.
+	* cascading failures
+* may hide for a long time until triggered by unusual circumstance.
+* reason: software make the wrong assumptions which are true in most cases but become false in rare cases.
+* solution: lots of small things to help. 
+
+###Human Errors
+Humans design, build and run the system. Humans are known to be unreliable.
+
+What can we do?
+
+* Design a system in a way that minimizes opportunities for error.
+* Decouple the places where people make the most mistakes from the places where they can cause failures. E.g. sandbox - use all features including real data but no impact on real users.
+* Testing
+* Quick and easy recovery
+* Monitoring
+* Good management practices and training.
+
+###Importance
+
+###Other
+Availability can be measured as: Uptime / Total time (Uptime + Downtime).
+
+Reliability is a measure of the probability that an item will perform its intended function for a specified interval under stated conditions. There are two commonly used measures of reliability:
+
+* Mean Time Between Failure (MTBF), which is defined as: total time in service / number of failures 
+* Failure Rate (λ), which is defined as: number of failures / total time in service.
+
+the distinction between reliability and availability: reliability measures the ability of a system to function correctly, including avoiding data corruption, whereas availability measures how often the system is available for use, even though it may not be functioning correctly. For example, a server may run forever and so have ideal availability, but may be unreliable, with frequent data corruption.[6]
+
+##Scalability
+a system's ability to cope with increased load. it needs to answer the questions: if the system grows in a particular way, what are our options to cope with the growth? how can we add more resources to handle the increasing load?
+
+###Describing load
+First, we need to succinctly describe the current load on the system; only then can we discuss growth questions (what happens if our load doubles?). Load can be described with a few numbers which we call load parameters. The best choice of parameters depends on the architecture of your system: perhaps it’s requests per second to a web server, ratio of reads to writes in a database, the number of simultaneously active users in a chat room, the hit rate on a cache, or something else.Perhaps the average case is what matters for you, or perhaps your bottleneck is dominated by a small number of extreme cases.
+
+Twitter case is very interesting to read. Generally it has two options and both have pros and cons. Twitter creates a hybrid solution (combining both) - use solution #1 for follower #1, use solution #2 for follower #2 and then merge the results shown in home timeline.
+
+###Describing performance
+Investigate what happened when the load increases.
+
+* keep resource unchanged, how is the performance affected?
+* to keep the performance, how much resources to add?
+
+Response time is not a single number, but a distribution of values.
 
 
 
