@@ -43,5 +43,19 @@ Here's the workflow,
 3. when read, find in memtable => most recent on-disk segment => next-order segment
 4. from time to time, a background to compact and merge segments.
 
-One issue - data loss because the memtable is lost when crashed. To avoid the problem, each write will also append to a file on dish (order doesn't matter, because it is for recovery).
+``One issue`` - data loss because the memtable is lost when crashed. To avoid the problem, each write will also append to a file on dish (order doesn't matter, because it is for recovery). when memtable is written back to disk, remove that log file.
 
+### Other
+Lucene - an indexing engine for full-text search used by ElasticSearch and Solr. It uses SSTable-like sorted files.
+
+## B-trees
+1. Most common type of index.
+2. Used as standard index implementation in almost all relational DBs, and many non-relational DBs.
+3. Like SSTables, it also keeps key-value pairs sotred by key, but here's the differences,
+	* The log-structured indexes earlier break the database down into variable-size segments, typically several megabytes or more in size, and always write a segment ``sequentially``. 
+	* B-trees break DB into fixed-size blocks or pages, usually 4kB in size, and read or write a page a a time. Corresponds more closely to underlying hardware.
+4. One page is designated as the root of B-tree. When look up a key, start here. It contains k keys and key+1 references to child pages. Each child is responsible for a continuous range of keys and the keys in root page indicate the range. A leaf page contains key and the value (or the reference to pages where value could be found). 
+
+When update or insert new key-value, the tree remains balanced. A tree with n keys always has a height of O(logn). 
+
+### Update-in-Place vs. Append-only Logging
