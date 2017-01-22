@@ -115,5 +115,75 @@ It can also provide data models that are difficult to implement with disk-based 
 | Used by | end user via app | internal analyst |
 | Database size | GB to TB | TB to PB |
 
+In early one DB is used for both transaction-processing and data analytics. Later they're separated and the latter one is called ``data warehouse``.
 
-    
+##Data warehousing
+* company may have many different transaction-processing system - website, inventory tracking system, hr management etc. 
+* these OLTP systems
+	* highly available and low-latency.
+	* critical to business operation
+	* inappropriate to run data analytics query which is expensive and impacts performance.
+* ``Data warehouse``
+	* separated so no impact on OLTP
+	* a read-only copy of all OLTP data
+	* Data is extracted from OLTP via periodically dump or stream update, converted to analysis-friendly schema, cleaned up and loaded into data warehouse. This process is called Extract-Transform-Load (ETL).
+	* benefit: can be optimized for data analytics processing. 
+
+###Stars and snowflakes: schemas for analytics
+transaction processing may use a lot of different data models; but many data warehouses use ``star schema`` (aka, ``dimensional modeling``).
+
+``fact table`` - the center of schema
+* each row represents an event
+* some columns are attributes (i.e., properties)
+* other columns are ``foreign key references`` to other tables called ``dimension`` tables.
+* the dimensions represent the `who, what, where, when, how and why` of the event.
+
+The name ``star schema`` comes from the fact that the fact table is in center and surrounded by dimention tables using foreign keys.
+
+When a dimension is broken down into sub-dimensions, it is called ``snowflake schema``.
+
+Ina typical data warehouse, fact table and dimension tables are often very wide (several hundred columns) to store all relevant metadata.
+
+## Column-oriented storage
+fact table is too big and becomes a challenging problem to store and query.
+
+unlike storing rows one by one, column-oriented storage stores all the values from each column separately(i.e., one column one file).
+
+###Column compression
+column compression to improve performance.
+
+``bitmap encoding`` is very interesting
+* assume there are m rows and n distinct column values. We can create a table with n rows - each row represents a distinct value. The column itself is a m length bit - each bit represents a row in previous table. If the value of that row matches current distinct value, the bit is 1; otherwise 0.
+* if too many distinct values, the bitmap may have a lot of zeros to be sparse. we an use ``run-length encoding``.
+
+Again, this is very cool. I like it.
+
+###Sort order in column storage
+Sorting each individual column doesn't make sense because we wouldn't know which item in the columns belong to the same row. The rule is, kth item in one column and kth item in the other column belong to the same row.
+
+So we need to sort the entire row at a time. use primary column, second column (which define the order for all rows with the same value of primary column).
+
+Sorting can help column compression.
+
+##Aggregation: data cubes and materialized views
+Column storage can be significantly faster for adhoc queries.
+
+``materialized view``: similar to relational DB view but the difference is that it stores query result instead of query itself.
+
+When underlying data changes, the materialized view needs to be updated. It makes write more expensive. 
+
+One usage of ``materialized view`` is ``data cube`` or ``OLAP cube``.  The book has a good explanation on 2d cube.
+
+* Advantage - very fast
+* Disadvantage - not flexible for some queries.
+
+#Summary
+* transaction processing OLTP vs. data analytics.
+* OLTP - use index to handle performance. Disk seek time is bottleneck.
+* Data warehouses - query is expensive and need to scan millions of data in a short time. Disk bandwidth is bottleneck. column-oriented storage is a popular solution.
+
+OLTP has two categories of engines,
+* log-structured data, e.g., append-long. higher write throughput.
+* Update-in-place, e.g., B-tree.
+
+All this knowledge is good for app developers to understand and choose the right tool.
