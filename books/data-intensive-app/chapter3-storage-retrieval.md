@@ -105,5 +105,15 @@ The performance gain is not only from RAM access (because OS can cache recent us
 It can also provide data models that are difficult to implement with disk-based indexes.
 
 # Transaction Processing or Analytics?
+* ``Online Transaction Process (OLTP)``: early an application typically looks up a small number of records by some key using index. Records are inserted or updated based on user's input. This access pattern is known as OLTP.
+* ``Online Analytic Processing (OLAP)``: DB is used for data analytics too. Do aggregation operation to fill in report (business intelligence). 
+
+| Property | OLTP  |  OLAP |
+|:----------|:-------------|:------|
+| Main read pattern |  a few records fetched by keys | aggregate large number of rows |
+| Main write pattern | a few low-latency write from users | bulk import or stream event |
+| Used by | end user via app | internal analyst |
+| Database size | GB to TB | TB to PB |
 
 
+    
