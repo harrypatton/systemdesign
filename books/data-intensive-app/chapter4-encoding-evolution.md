@@ -55,4 +55,41 @@ Subtle problems
 Despite these flaws, JSON/XML/CSV are **good enough for many purposes**.
 
 ###Binary Encoding
+JSON and XML use a lot of space compared to binary format. It leads to binary editions for JSON and XML. Some extend data type and other keep data model unchanged.
+
 ###Thrift and Protocol Buffers
+[me] I like the two formats. 
+
+Thrift originates from Facebook and Protocol Buffers originates from Google.
+* Both require a schema for any data to be encoded using IDL.
+* Code generation tool can produce classes for different languages.
+
+Thrift
+* Binary protocol
+* Compact Protocol - it uses variable-length integer, and other changes.
+
+Protocol Buffers - similar to compact protocol in Thrift.
+
+All can have required and optional properties.
+
+#### Field Tags and Schema Evolution
+Encoded data doesn't have any information about field name. It only has field tag (i.e., property id). 
+
+As Id, field tag is very important to value meaning,
+* Cannot change field tag.
+* Adding a new field is ok - old code ignores it and new code can handle it, **except** we cannot add a new ``required`` field though; otherwise new code cannot read old data which doesn't new field.
+* Removing a field is ok only if it is ``optional``. Note, the same tag number cannot be used again in the future.
+
+#### Data Types and Schema Evolution
+Sometimes it is ok to change data type. It may lose precision or get truncated. E.g, change 32-bit int to 64 bit int. New code can handle old data, but old code will truncate new data (using 64 bit int).
+
+### Avro
+Apache Avro ws a sub-project of Hadoop because Thrift didn't fit the scenario.
+
+It has two schema languages,
+* IDL for human editing
+* one based on JSON for machine-readable.
+
+Encoded data contains values only. It has length and then UTF-8 bytes. To parse the data, it has to check the schema. Coding reading and writing the data have to use the same schema.
+
+#### Writer's schema and reader's schema.
