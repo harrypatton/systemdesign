@@ -131,4 +131,103 @@ Code generation is good for static typed languages such as Jave, C#, C++. It is 
 
 Avro can be used with and w/o code generation.
 
+##The merits of schemas
+Schema is used to describe a ``binary`` encoding format.
 
+Many data systems implement some proprietary binary encoding based on schemas. DB uses the schema to send queries to DB and get back responses.
+
+* much more compact than various ``binary JSON`` variants because of field name omitting.
+* serve as valuable form of doc. It must be up-to-date.
+* check forward/backward compatibility by saving all schemas.
+* support for statically typed programming languages.
+
+schema evolution provides the same flexibility as schemaless or schema-on-read JSON database, and also provide better guarantees about your data and tooling.
+
+#Modes of Data Flow
+
+##Data flow through databases
+* write to db => encode
+* read from db => decode.
+* backward compatibility is required: newer code can read data.
+* forward compatibility: required. a few processes can access at the same time. Some are old and the other are new code.
+
+ Application level change is probably required to take care of data loss issues.
+
+###Different values written at different times
+It is easy to upgrade all applications at once, but hard to migrate all data to new schema at once in DB, so DB needs to allow simple schema changes.
+
+###Archival storage
+common to take a snapshot of db for backup.
+
+##Data flow through services: REST and RPC
+client <-> server. The API exposed by server is known as ``service``.
+
+*web: http is used as the transport protocol. API implemented on top is application specific, so the client and server need to agree on APIs.
+* ``Service-oriented architecture`` (aka ``microservices architecture``): decompose a large application into smaller services by area of functionality.
+* individual service can evolve by itself. so expect both old and new versions of service and clients running. encoding data must be compatible. (note from me: instead of considering compatibility, a service can provide a different API for new/updated feature.).
+
+### Web Services
+when http is used as underlying protocol for talking to service, this is called ``web service``.  User cases,
+* client app (e.g., mobile device) makes request to service over HTTP.
+* one service calls another service in same organization.
+* one service calls another service in different organization (usually via internet).
+
+Two popular approaches, ``REST`` and ``SOAP``.
+
+REST design philosophy
+* simple data format
+* using url to identifying resources
+* using http features for cache control, authentication, content negotiation.
+
+SOAP
+* XML-based protocol to make network API request.
+* Independent on http. try to avoid using http features. It has own standards.
+
+### Remote Procedure Calls (RPC)
+RPC: making a request to remote network service as if it calls functions in the same local process. 
+
+Network request is very different from local call,
+* result is unpredictable. 
+* may not return result
+* retrying cause the same action to run multiple times (because response is lost).
+* Performance/response varies a lot.
+* need to encode parameter value. complicated for large objects.
+* data type probably incompatible between client and server.
+
+conclusion: hard to treat it as a local object. 
+
+### RPC future
+Custom RPC protocols with binary encoding format has better performance than JSON + REST.
+
+* REST - good for public APIs.
+* RPC - good for internal services.
+
+### Data Encoding and Evolution for RPC
+Service is updated first and then client, so backward compatibility on request, and forward compatibility on responses. In other words, service needs to handle old-version request, and client can handle new-version response.
+
+Service may not have control on client side, so it has to maintain compatibility for a long time or infinity.  If a compatibility-breaking change is required, it has to provide multiple versions SxS.
+
+##Message passing data flow
+client sends message -> message broker (message queue) -> received by service.
+* act as a buffer if service is too busy
+* redeliver message if previous service crashed
+* decouple client and server. (client doesn't know the server)
+* one message can be sent to multiple receivers.
+
+Difference from RPC: no response to client.
+
+###Message Brokers
+Open source - RabbitMQ, ActiveMQ etc.
+
+Easy to understand.
+
+###Distributed Actor Framework
+``Action Model``: a programming model for concurrency in a single process. Instead of handling threads directly, it encapsulates logic in ``actors``. 
+* Actors use async message for communication among them. 
+* The framework schedules the work for actors.
+* Message may get lost.
+
+distributed actor framework = message broker + actor programming model
+
+#Summary
+recommended to read the section to refresh what we read. It is a long chapter:).
