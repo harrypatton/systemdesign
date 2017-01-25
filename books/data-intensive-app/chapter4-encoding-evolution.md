@@ -92,4 +92,43 @@ It has two schema languages,
 
 Encoded data contains values only. It has length and then UTF-8 bytes. To parse the data, it has to check the schema. Coding reading and writing the data have to use the same schema.
 
-#### Writer's schema and reader's schema.
+## Writer's Schema and Reader's Schema
+Definitions
+* When app writes data, it needs a schema to encode the data. it is called ``writer's schema``.
+* When app read data, it needs a schema to decode the data. it is called ``reader's schema``.
+
+The key idea with Avro is ``both writer's and reader's schemas don't have to be the same`` - they only ``need to be compatible``.
+
+When decode code, Avro library checks both reader and writer schemas to resolve conflicts.
+* order doesn't matter. It uses field name.
+* when a field exists on writer but not reader, reader just ignores it.
+* when a field exists on reader but not writer, reader will uses ``default`` value defined in reader schema.
+
+ **Question**: how does the library know the writer schema? The data itself doesn't embed schema content. Actually library caller will pass in writer schema or a schema id which can be read from database to get full schema content. A few examples,
+ * it is designed for data analytics - scan a ton of rows at once. A writer schema is probably defined in the beginning of file.
+ * every encoded data can include a version number in the beginning.
+* communicate schema between processes.
+
+version number is good to have. It could be incremental integer or a hash of schema content.
+
+## Schema Evolution Rules
+Forward compatibility: code with ``old version of reader schema`` can read data written in ``new writer schema``.
+Backward compatibility:  ``new version of reader schema`` can read data written in ``old writer schema``.
+
+To maintain compatibility, add or remove a field that has a default value.
+* when add a field without a default value, code with new version of reader schema cannot read data written in old version.
+* when remove a field without a default value, code with old version of reader schema cannot read data written in new version.
+
+## Dynamically Generated Schemas
+One advantage over Thrift and Protocol Buffers - no tag number in schema.
+
+``dynamically generated schema`` - dump db tables into Avro. It has encoded data and also the schema in which column name becomes field name. when db table schema changes, it just generates a new version of schema. Runtime just check if compatible by field name. If we use Thrift or Protocol Buffers, each column needs a tag number assigned manually; admin need to maintain the tag number; don't reassign a tag used before.
+
+[me] to be frank, the difference is only between tag id and field name. Tag id is a little bit harder to manage in this case but not terrible.
+
+## Code generation and dynamically typed language
+Code generation is good for static typed languages such as Jave, C#, C++. It is not good for dynamically typed programming languages like JavaScript or Python because there is no compile-time type checker.
+
+Avro can be used with and w/o code generation.
+
+
