@@ -88,3 +88,38 @@ It addresses most issues from WAL shipping solution.
 All other solutions are implemented by database system. In some scenarios that we have more control like replicate only interesting data, we can use trigger on application layer. (`trigger written in database belongs to application layer.`)
 
 #Problems with replication lags
+Goal with replications
+
+1. failure tolerate
+2. scalability
+3. reduce latency
+
+leader-based replication is `read-scaling` architecture. Cannot use fully sync replication because it would prevent writing when one node failed. It has to use async replication and then cause `inconsistent data issue` (even eventually the data becomes consistent - `eventual consistency`).
+
+`replication lag`: the duration between the write on leader and the reflection on followers.
+
+## Reading your own writes
+write goes to leader but reader may not, so a user may write something but didn't see it when view through followers.
+
+Solution: `read after write consistency` (aka, `read-your-writes consistency`).
+
+**guarantee**: the user always see his latest update. no guarantee that other users always see latest update.
+
+**Implementation** - a few approaches,
+
+1. read data from leader when user `may` or `is able to` modify the data. E.g., only the owner can update profile so the owner always get his latest profile from `leader`. other users uses `followers` to view that user's profile. This approach needs domain knowledge. (we cannot query backend to see if the data is modified or not.)
+2. track the time of last update, e.g., use `follower` if last update is more than 1 minute ago; otherwise go through `leader`.
+3. client can save the timestamp (or logical timestamp) and the replica must have all data at least until that timestamp; otherwise go to other replica or write for updating.
+
+In case of multiple datacenters, it could be tricky because it may go to another datacenter to find the leader.
+
+Scenario: the same user on multiple devices. Update timestamp on client may not work because it is probably not the latest one. (probably save online and every client needs to call service to get the value). (The book mentions another issue, but I don't understand).
+
+##Monotonic reads
+**Issue**: a user can see things `moving backwards in time` or `something disappear`. E.g., user B made a change. replica A has the change but replica B hasn't gotten it yet. When user A visits the page, it may go to replica A and then see the change. Refresh the page, it may go to replica B and then the change from B disappears.
+
+``Monotonic reads``: a guarantee that the user always get the most recent data `they have seen`. They will not read older data after having previously read newer data.
+
+Solution: each user reads all data from the same replica. (different users can read from different replicas).
+
+## Consistent prefix reads
