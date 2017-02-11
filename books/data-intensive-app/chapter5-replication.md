@@ -123,3 +123,85 @@ Scenario: the same user on multiple devices. Update timestamp on client may not 
 Solution: each user reads all data from the same replica. (different users can read from different replicas).
 
 ## Consistent prefix reads
+Some writes are in order, but the reader (via follower) may get out-of-order update data. 
+
+`This guarantee` says that if a sequence of writes happens in a certain order, then anyone reading those writes will see them appear in the same order.
+
+It is not a problem if database can write in order but this issue usually happens in `partition` because of no writer order. One solution, the writes related to each other go to the same partition.
+
+## Solution for replication lag
+1. Evaluate the impact of replication lag. 
+2. Transaction on distributed system could be the answer. (The book has a separate chapter for that).
+
+# Multi-leader replication
+Multiple nodes can accept writes. master-master. When one master node processes the data, other leaders act as `follower` to that `master`.
+
+## User Cases
+### Scenario - multi-datacenter operation.
+
+1. single-leader solution is inefficient for users who are not in the same data center.
+2. in multi-leader replication, one datacenter has one leader.
+	* inside the data center, it is more like single-leader model.
+	* the leader will send the change to another leader in different data center.
+	* the other leader will propagate changes to all followers in the same data center.
+
+**Advantages**
+ * good write performance by reducing inter-datacenter latency
+ * tolerate datacenter outage
+
+**big downside: conflicts.**
+
+### Scenario - client with offline operation
+local database acts as a leader. Multiple devices => multiple leaders. Conflict happens. Replication lag could be days.
+
+### Scenario - collaborative editing
+change commits to local storage and then merge.
+
+## Handling write conflicts
+a single-leader database, it doesn't have conflict. In multi-leader database, the conflict is only detected `asynchronously` at some later point.
+
+### Conflict Avoidance
+Common approach: all writes for particular records go to the same leader.
+
+Sometimes you cannot avoid conflicts.
+
+### Converging towards a consistent state
+The database must resolve the conflict in a `convergent` way, which means that all replicas must arrive at the same final value when all changes have been replicated.
+
+A few ideas
+
+1. Give each write an id and the one with highest id wins. When we use time stamp as id, it is known as `last write wins`. 
+2. Give each replica an id. The write from replica with highest id wins.
+3. Merge values together so no data loss.
+4. Record all values in separate data source and ask user to resolve the conflict.
+
+### Custom Conflict Resolution Logic
+We can write code to resolve the conflicts.
+
+1. on write - when system writes and detects the conflict, it calls the code to resolve conflict.
+2. on read - system saves all data when conflict. When read, all versions of data return and the app needs to resolve.
+
+## Multi-leader replication topologies
+It is used when more than 2 leaders,
+
+1. `all to all`: a leader sends the write to every other leader.
+2. `circular topology`: a leader sends its writes to next one.
+3. `start topology`: one designated root node forwards all writes to other nodes.
+
+Be careful about `concurrent writes`, `version vector` can be used. (`time stamp` is not sufficient).
+
+# Leaderless replication
+A few databases like Dynamo use this solution. They're called `dynamo-style`.
+
+## Writing to the database when a node is down
+leader-based configuration - fail over is necessary.
+
+In leaderless configuration - read and write can send to all nodes. The operation is considered success as long as `m` nodes accept, e.g., `w+r > n` (quorums), each value has a version and we return the one with higher version.
+
+### Read Repair and Anti-entropy
+when an unavailable node comes back online, it needs to catch up on writes it missed,
+
+1. Read repair: a client reads value from multiple nodes in parallel. It may find stale value from one node and then write new value back to that node.
+2. Anti-entropy process: background process looks for difference and fixes them.
+
+## Quorums for reading and writing
