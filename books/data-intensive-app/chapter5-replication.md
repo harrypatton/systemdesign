@@ -205,3 +205,51 @@ when an unavailable node comes back online, it needs to catch up on writes it mi
 2. Anti-entropy process: background process looks for difference and fixes them.
 
 ## Quorums for reading and writing
+if there are `n` replicas, every write must be confirmed by `w` nodes to be considered successful, and we must query at least `r` nodes for each read. 
+
+As long as `w + r > n`, we expect to get an up-to-date value when reading, because at least one of the r nodes we’re reading from must be up-to-date. Reads and writes that obey these r and w values are called `quorum reads and writes`. `r` and `w` as the `minimum` number of votes required for the read or write to be valid.
+
+In Dynamo-style database, these numbers can be configurable. A common choice is,
+
+1. `n` is a odd number (machines)
+2. both `r` and `w` set to `(n+1)/2` (round up).
+
+`the quorum condition w+r > n` can tolerate the following failures,
+
+1. if `w<n`, we can still process writes if one node failed.
+2. if `r<n`, we can still process reads if one node failed.
+3. With n = 3, w = 2, r = 2 we can tolerate one unavailable node.
+4. With n = 5, w = 3, r = 3 we can tolerate two unavailable nodes. 
+5. Normally, reads and writes are always `sent to all n replicas in parallel`. The parameters w and r determine how many of the n nodes need to report success before we consider the read or write to be successful.
+
+when fewer than `r` or `w` nodes available, the operation failed.
+
+### Monitoring Staleness
+For leader-based replication, database exposes the metric for replication logs. Checking the point between leader and followers can give an idea about the replication lag.
+
+harder to monitor leaderless based replication.
+
+## Sloppy quorums and hinted handoff
+Quorum can tolerate failed nodes without fail over. It can also tolerate slow nodes (because they just need minimum `r` or `w` nodes' response).
+
+It is good for applications that require high availability and low latency but ok with occasionally stale reads.
+
+In a large cluster, a network error may cause a client to lose connections to a lot of nodes that cannot reach the quorums. Trade-off,
+
+1. return error.
+2. Or should we accept writes anyway, and write them to some nodes that are reachable but aren’t among the n nodes on which the value usually lives?
+
+the latter is called `sloppy quorums`: writes and reads still require `w` and `r` successful responses, but those may include nodes that are not among the `designated n home nodes` for a value. 
+
+when network is fixed, the write on temporary nodes are sent back to designated ones. this is called `hinted handoff`.
+
+It is useful to increase writing availability.
+
+## Multiple datacenter operation
+both multi-leader and leaderless replication can be used in multi-datacenter operations.
+
+## Concurrent writing
+For defining concurrency, exact time doesn’t matter: we simply call two operations concurrent if they are both unaware of each other, regardless of the physical time at which they occurred. 
+
+Because of problems with clocks in distributed systems, it is actually quite difficult to tell whether two things literally happened at the same time.
+
