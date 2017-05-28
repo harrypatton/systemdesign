@@ -10,6 +10,8 @@ Source: [How We've Scaled Dropbox](https://www.youtube.com/watch?v=PE4gwstWhmc)
     
 ## System
 1. start with simple. They know how to create a better system but we never know what users need.
+      * break down into smaller services when evolve. E.g., web server, DB, upload server, notification server.
+      * evolve based on the growth.
 2. MySql works very well to scale.
 3. Adding multiple instances seems easy on the surface but more difficult when start doing it.
 4. Customize memcached to ensure consistency. 
