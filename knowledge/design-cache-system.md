@@ -49,3 +49,11 @@ Go back to cache system.
          * the source has a very interesting analysis here. It breaks down into small steps. Apparently write and read compete each other. Because cache system is read-heavey system, we need to prioritize read operation (which should avoid lock).
          * hash table implementation - if each element uses another linked list to save all collision values. The lock could be on row (element) level instead of the whole hash table level. This would be very cool. I like the analysis here.
          * quote from the source: `The key to understanding and optimizing concurrency problems lies in breaking the problem down into as granular parts as possible. As is the case with most concurrent systems, writes compete with reads and other writes, which requires some form of locking when a write is in progress. We can choose to have writes as granular as possible to help with performance. Instead of having a lock on a hashmap level if we can have it for every single row, a read for row i and a write for row j would not affect each other if i != j. Note that we would try to keep N as high as possible here to increase granularity.`
+3. Now that we sort the problem on single machine, we need to shard the data (too much data to hold on a single machine).
+      * 30TB needs 420 machines. Each machine needs to handle 23k QPS.
+      * 4 core machine. (4 * 1000 * 1000 / 23k) microseconds = 174us. seems reasonable for RAM.
+      * Use consistent hashing to distribute the request based on key.
+4. What happened if one shard die?
+      * increase latency because of cache miss. 
+      * each shard should have multiple machines.
+      * replicaiton -> inconsistency. master-slave or master-master.
