@@ -22,4 +22,10 @@ Based on CAP theorem, we choose availability over consistency.
 ## Deep Dive
 1. Is shard required? yes. one machine cannot fit all data.
 2. should the stored data be normalized? I don't know the answer. depending on the scenario. 
-    * normalized data usually requires join operation which could be very expensive.
+      * normalized data usually requires join operation which could be very expensive. Joining across machine is even worse.
+      * denormalize data means all related data is on the same machine. low latency though. Downside is that we may have inconsistency. We need to make sure all data are eventually consistent.
+3. How many machines? 30 machines. 
+      * 3-copy is a good number for replication.
+      * master - slave strategy. master for write and slave for read. If master fails, it takes time for slave to pick up as new master. It means there's a small down time period. If data is not sync'd to slave, there could be data loss. NOT acceptable.
+      * master - master. we support multiple writes.
+      * peer to peer. no master or slave. every node communicates with the change. Note: I think both master-mater and p2p are the same for me, unless master-master still have slave machines. in p2p model, they use quorum replication to control consistency.
