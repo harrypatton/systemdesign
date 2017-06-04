@@ -27,5 +27,5 @@ Based on CAP theorem, we choose availability over consistency.
 3. How many machines? 30 machines. 
       * 3-copy is a good number for replication.
       * master - slave strategy. master for write and slave for read. If master fails, it takes time for slave to pick up as new master. It means there's a small down time period. If data is not sync'd to slave, there could be data loss. NOT acceptable.
-      * master - master. we support multiple writes.
-      * peer to peer. no master or slave. every node communicates with the change. Note: I think both master-mater and p2p are the same for me, unless master-master still have slave machines. in p2p model, they use quorum replication to control consistency.
+      * master - master. we support multiple writes. It is better than master-slave but 
+      * peer to peer. no master or slave. every node communicates with the change. They use quorum replication to control consistency.
