@@ -36,4 +36,6 @@ Main scenarios are below,
  ### Concerns
  1. The 4 services don't call other services yet. It uses the underlying DB directly. Is it right? 
     * one join to get all data including feed content?
-    * one join to get candidate feed id list. Use another service to return feed content itself. This solution is better because the backend can get a longer list of feed candidate and the front end can decide how many to show. When need to show, just get the content from cache based on the feed id.
+    * one join to get candidate feed id list. Use another service to return feed content itself. This solution is better because
+      * the backend can get a longer list of feed candidate and the front end can decide how many to show. When need to show, just get the content from cache based on the feed id.
+      * the relationship table could have just two columns `userid` and `feedid`. The feed content can save in other DBs. In other words, we use this table to store feed metadata and another table or source to store the content itself.
