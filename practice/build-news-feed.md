@@ -62,6 +62,24 @@ Main scenarios are below,
       * `feeds list service` - can we use cache? whenever a new feed is added, we can async update the new ranking and also the cache. If cache doesn't exist, we can recalculate the ranking.
 6. Redundant
       * write - always write to two masters, or master-active, or masterless servers? How do we decide?
+7. CAP - a user doesn't need to see the result immediately so availability is more important than consistency in this case. Eventual consistency (i.e., see the result finally) is good enough.
+      * note, the user must see his status update immediately so it must be sync. Fan-out could be async though.
+
+## Data Schema
+* `user table`: user_id, name
+* `user friendly table`: user_id, friendly_user_id
+* `feed metadata`: user_id, feed_id, datetime (use server time)
+* `feed content`: feed_id, feed_content
+* `feed fanout table`: user_id, feed_id
+
+### Details
+1. primary id could be int or UUID. https://stackoverflow.com/questions/30461895/the-differences-between-int-and-uuid-in-mysql
+      * int is unique in that specific DB table. Not unique universally. (4 bytes) bitInt would be 8 bytes. https://stackoverflow.com/questions/5634104/what-is-the-size-of-column-of-int11-in-mysql-in-bytes
+      * UUID is unique universally. Performance is ok. Unnoticable slow. More space (16 bytes). Note, uuid is usually 36 chars when represent as string, but to store, it is 16 bytes in UUID version1.
+      
+## Something I missed here
+1. Uses a background service to generate news feed for all users every 5 minutes. The result can be used as cache. Why not on-demand?
+2. We return all feeds to user. It should paginate, i.e., the web api should accept an offset for that.
 
 ## Learning
 ### Twitter
