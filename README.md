@@ -4,6 +4,7 @@
 * [BitTiger - 【第一节课】CS103 高频系统设计精讲](https://www.bittiger.io/classpage/2gpdkpxGQegerMnAP)
 
 ## TODO List
+* [Scale at Facebook](https://www.infoq.com/presentations/Scale-at-Facebook): this is pretty good. Actually I learned a few things from it, especially the principles.
 * [秒杀系统设计](http://blog.csdn.net/v_july_v/article/details/6279498)
 * [程序员如何提问面试官？针对工程师、技术经理及CTO的提问指南](
 https://mp.weixin.qq.com/s?__biz=MzAwMDU1MTE1OQ==&mid=2653548609&idx=1&sn=4c76d4e83ef5def978a496dcb124dcee&chksm=813a61d9b64de8cf6bc8eb8dedbce187881f468886842e24a1af2685ef40d815dc961fc458b6&mpshare=1&scene=1&srcid=0420e1rMvdQRGUwehIGGdUj8&key=126df665731994ec774ec85abbc511ff14e82136ecdd21b89a7419d79bbb07da7e728f336376f797ef4b35ab3164f54d4dc9054617577e285c90efad12e45bb5acf94e93aeb0c5b91dd891a35cd829eb&ascene=0&uin=MTI0MjAwNDczMw%3D%3D&devicetype=iMac+MacBookPro13%2C2+OSX+OSX+10.12.3+build(16D32)&version=12020110&nettype=WIFI&fontScale=100&pass_ticket=JQSKDQ0hT2Q3vDcliz0TduPZJTwupFbRF7tWVU%2B6n1%2FQkQbu0LCsnTZE0Y%2Fg70PG)
