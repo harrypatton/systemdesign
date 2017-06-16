@@ -62,3 +62,19 @@ Main scenarios are below,
       * `feeds list service` - can we use cache? whenever a new feed is added, we can async update the new ranking and also the cache. If cache doesn't exist, we can recalculate the ranking.
 6. Redundant
       * write - always write to two masters, or master-active, or masterless servers? How do we decide?
+
+## Learning
+### Twitter
+* One tweet one row.
+* How to partition? 
+   * partition by primary id (int): P1 has 20 and 22 and P2 has 21 and 23. When query recent tweets, it has to go through N partitions.
+   * partition by user id: when query tweet by primary id, it has to go through N partitions.
+   * current solution: partition by date. Search latest partition until collect enough data.
+* Low latency -> partition and index.
+* Locality - new tweets are requestd most frequently so usually only 1 partition is checked.
+### Timeline
+* Naive SQL join: extremely slow if there're a lot of friends or index cannot be in RAM.
+* Current implementation: the timeline is stored in memcached; fanout offline (low latency SLA); timeline has length limit; if cache miss, use join.
+* Memory Hiearchy
+   * Fanout to disk: too many IOs. Rebuild from other data store is not too expensive.
+   * Fanout to memory: much faster.
