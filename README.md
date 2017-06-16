@@ -4,6 +4,7 @@
 * [BitTiger - 【第一节课】CS103 高频系统设计精讲](https://www.bittiger.io/classpage/2gpdkpxGQegerMnAP)
 
 ## TODO List
+* [System Design Prime](https://github.com/donnemartin/system-design-primer): the most comprehensive one.
 * [Scale at Facebook](https://www.infoq.com/presentations/Scale-at-Facebook): this is pretty good. Actually I learned a few things from it, especially the principles.
 * [秒杀系统设计](http://blog.csdn.net/v_july_v/article/details/6279498)
 * [程序员如何提问面试官？针对工程师、技术经理及CTO的提问指南](
