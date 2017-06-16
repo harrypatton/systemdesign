@@ -78,3 +78,16 @@ Main scenarios are below,
 * Memory Hiearchy
    * Fanout to disk: too many IOs. Rebuild from other data store is not too expensive.
    * Fanout to memory: much faster.
+### User Friends Table
+* Partitioned by user id
+* Edge stored in both `forward` and `backward` directions. E.g., it stores both A->B and B->A.
+* Write operations are idempotent: retry until success.
+* Partition, replicate and index: most used.
+### Search
+* Original design: maintain a table term_id + doc_id. It is like inverted indexing document. It says the index may not fit in RAM (weird)
+* Current implementation: partition by time. old searched term is in old partitions.
+* Future: partiton and merge. Something like map reduce.
+### Others
+* All data for real-time queries MUST be in memory; disk is for writes only.
+* Some problems can be solved with pre-computation; but a lot cannot.
+### 
