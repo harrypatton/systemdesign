@@ -16,3 +16,6 @@ https://mp.weixin.qq.com/s?__biz=MzAwMDU1MTE1OQ==&mid=2653548609&idx=1&sn=4c76d4
 * [九章系统设计](http://www.jiuzhang.com/article/?tags=system-design)
 * [九章算法系统设计面试大总结](https://zhuanlan.zhihu.com/p/26173608)
 * [系统设计评分标准](https://mp.weixin.qq.com/s?__biz=MzA5MzE4MjgyMw==&mid=2649455062&idx=1&sn=8a39f11e942c38f38da2160d1cc7579a&mpshare=1&scene=1&srcid=0317sQoks5VOuRCajevFG9vw&key=b16de343c5ecfc5161aa66c7210fd6442ba8a3f5128cb6a8b029c7baa5dfe3b7067d7fc16256c3d873e96052e90ff7317e9e89437a77d8295f2db16351df4d7d3a6421831a55bb2ea27e249d93406337&ascene=0&uin=MTUyMzg3NjAwMA%3D%3D&devicetype=iMac+MacBookAir7%2C1+OSX+OSX+10.12.3+build(16D32)&version=12020010&nettype=WIFI&fontScale=100&pass_ticket=0AiIToHJN8yqpuqRAsA5PaaQMJr8KtvlnZ2EqkX0zx%2BEZweRvHKyF%2ByjmycpUbVn)
+
+## Good Systems
+* [Uber Schemaless Design](https://eng.uber.com/schemaless-part-one/)
