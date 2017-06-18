@@ -4,6 +4,7 @@
 * [BitTiger - 【第一节课】CS103 高频系统设计精讲](https://www.bittiger.io/classpage/2gpdkpxGQegerMnAP)
 
 ## Good List
+* [A good video on how to scale up to 11m users](https://www.youtube.com/watch?v=vg5onp8TU6Q)
 * [How to prepare system design interview?](https://www.quora.com/How-do-I-prepare-to-answer-design-questions-in-a-technical-interview?redirected_qid=1500023)
 * [System Design Prime](https://github.com/donnemartin/system-design-primer): the most comprehensive one.
 * [Scale at Facebook](https://www.infoq.com/presentations/Scale-at-Facebook): this is pretty good. Actually I learned a few things from it, especially the principles.
